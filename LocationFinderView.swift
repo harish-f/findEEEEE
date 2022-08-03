@@ -10,22 +10,15 @@ import SwiftUI
 
 
 struct LocationFinderView: View {
-    @ObservedObject var recycleLocations = GetData()
-    @State var shownRecyclables: [Int] = [0]
+    @StateObject var recycleLocation = GetData()
     
     var body: some View {
         NavigationView {
             VStack {
-                if let data = recycleLocations.recyclingLocations {
-                    Text("data??")
-                } else {
-                    Text("No data")
-                }
+                Text("\(recycleLocation.recyclingLocations?.count ?? 69)")
             }
+            
             .navigationTitle("Find a bin")
-            .onAppear {
-                recycleLocations.loadData()
-            }
         }
     }
 }

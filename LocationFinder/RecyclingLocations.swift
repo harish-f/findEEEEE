@@ -6,33 +6,32 @@
 //
 
 import Foundation
+import SwiftUI
 
-struct RecyclingLocation: Decodable, Identifiable {
-    var id = UUID()
+
+struct RecyclingLocation: Codable {
     var type: String
-    var properties: String
-    var geometry: String
-    
 }
 
 class GetData: ObservableObject {
-    @Published var recyclingLocations:[RecyclingLocation]!
+    @Published var recyclingLocations: [RecyclingLocation]?
     
     init() {
         loadData()
     }
     
     func loadData() {
-        guard let url = Bundle.main.url(forResource: "e-waste-recycling-locations", withExtension: "json")
-        else {
-            print("Decoding file not found")
-            return
-        }
-        let data = try? Data(contentsOf: url)
-        if let recyclingLocations = try? JSONDecoder().decode([RecyclingLocation].self, from: data!) {
-            self.recyclingLocations = recyclingLocations
-            print("hkjewbsfiefosjbknaifohnjl")
-        }
+        let req = URLRequest(url: URL(string: "https://raw.githubusercontent.com/harish-f/find-E/main/Resources/e-waste-recycling-locations.json")!)
+        
+        URLSession.shared.dataTask(with: req) { data, request, error in
+            if let data = data {
+                let decoder = JSONDecoder()
+                DispatchQueue.main.async {
+                    try? self.recyclingLocations = decoder.decode([RecyclingLocation].self, from: data)
+                }
+                
+            }
+        }.resume()
     }
 }
 
